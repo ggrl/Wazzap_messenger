@@ -46,9 +46,12 @@ def start_client(host, port):
  
     try:
         while True: 
-            print(f"Please Log in: \n")
+            
             username = input("Enter username: ")
             sock.sendall((username + "\n").encode())
+            prompt = sock.recv(1024).decode()
+            print(prompt, end="")
+
             password  = getpass.getpass("Enter password: ")
             encoded_pw = password.encode()
             hashed_pw = hashlib.sha256(encoded_pw)
@@ -64,11 +67,14 @@ def start_client(host, port):
         threading.Thread(target=receive_messages, args=(sock,), daemon=True).start()
         while True:
             msg = input()
-            if msg.lower() in ("quit", "exit"):
-                break
-            sock.sendall(msg.encode())
+            sock.sendall((msg + "\n").encode())
     except KeyboardInterrupt:
         print("\n[!] Client shutting down")
+        try:
+            sock.sendall(("/quit\n").encode())
+        except:
+        pass
+        
     finally:
         sock.close()
 
