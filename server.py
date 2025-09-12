@@ -23,7 +23,7 @@ def accept(sock):
     conn.sendall(b"Welcome! Please log in.\nUsername: ")
 
 def login(conn):
-    """Handle login before joining chat."""
+    
     try:
         data = conn.recv(1024).decode().strip()
     except ConnectionResetError:
