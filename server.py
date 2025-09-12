@@ -15,13 +15,12 @@ USER_DB = {
 }
 
 
-def recv_line(conn):
-    """Read from conn until we have a full line (ending with \n)."""
+def recv_line(conn): #Full line reading
     try:
         chunk = conn.recv(1024).decode()
     except ConnectionResetError:
         return None
-    if not chunk:  # connection closed
+    if not chunk: 
         return None
 
     buffers[conn] = buffers.get(conn, "") + chunk
@@ -57,7 +56,7 @@ def login(conn):
 
     elif state.get("stage") == "password":
         username = state.get("username_candidate")
-        pw_hash = data  # client sends SHA256 hex digest
+        pw_hash = data  
 
         if username in USER_DB and USER_DB[username] == pw_hash:
             usernames[conn] = username
@@ -90,7 +89,7 @@ def handle_command(conn, command):
 def read(conn):
     data = recv_line(conn)
     if data is None:
-        return  # wait for full line or closed connection
+        return  
 
     username = usernames.get(conn, "Unknown")
 
