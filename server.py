@@ -14,9 +14,12 @@ def fill_DB():
     USER_DB.clear()
     with open('users.dat', 'r') as f:
         for line in f:
-            key, value = line.split(':')
-            value = value.strip()
-            USER_DB[key] = value
+            if not line.strip():
+                continue
+            if ":" not in line:
+                continue
+            key, value = line.split(":", 1)
+            USER_DB[key.strip()] = value.strip()    
 
 def recv_line(conn): #Full line reading
     try:
@@ -68,6 +71,16 @@ def login(conn):
             broadcast(f"*** {username} has joined the chat ***".encode(), conn)
             print(f"[+] {username} logged in from {clients[conn]}")
             del login_state[conn]
+        elif username not in USER_DB:
+            usernames[conn] = username
+            with open('users.dat', "a") as f:
+                        f.write(f"{username}:{pw_hash}\n")
+            fill_DB()
+            sel.modify(conn, selectors.EVENT_READ, read)  
+            conn.sendall(f"User created successfully! Welcome, {username}.\n".encode())
+            broadcast(f"*** {username} has joined the chat ***".encode(), conn)
+            print(f"[+] {username} logged in from {clients[conn]}")
+        
         else:
             conn.sendall(b"Username and password does not match.\n")
             login_state[conn] = {"stage": "username"}
