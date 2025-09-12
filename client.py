@@ -43,21 +43,25 @@ def start_client(host, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     print(f"[*] Connected to chat server {host}:{port}")
-
-    
-    threading.Thread(target=receive_messages, args=(sock,), daemon=True).start()
-
-    
+ 
     try:
-        username = input("Enter username: ")
-        sock.sendall((username + "\n").encode())
-        password  = getpass.getpass("Enter password: ")
-        encoded_pw = password.encode()
-        hashed_pw = hashlib.sha256(encoded_pw)
-        pw_hash = hashed_pw.hexdigest()
-        sock.sendall((pw_hash + "\n").encode())
+        while True: 
+            print(f"Please Log in: \n")
+            username = input("Enter username: ")
+            sock.sendall((username + "\n").encode())
+            password  = getpass.getpass("Enter password: ")
+            encoded_pw = password.encode()
+            hashed_pw = hashlib.sha256(encoded_pw)
+            pw_hash = hashed_pw.hexdigest()
+            sock.sendall((pw_hash + "\n").encode())
+            response = sock.recv(1024).decode().strip()
+            print(response)
 
-        
+            if "successful" in response.lower():
+                break  
+            else:
+                print("[!] Login failed, try again...\n")
+        threading.Thread(target=receive_messages, args=(sock,), daemon=True).start()
         while True:
             msg = input()
             if msg.lower() in ("quit", "exit"):

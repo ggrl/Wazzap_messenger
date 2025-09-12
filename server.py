@@ -20,7 +20,7 @@ def accept(sock):
     clients[conn] = addr
     login_state[conn] = {"stage": "username"}  
     sel.register(conn, selectors.EVENT_READ, login)
-    conn.sendall(b"Welcome! Please log in.\nUsername: ")
+    
 
 def login(conn):
     
@@ -53,7 +53,7 @@ def login(conn):
             print(f"[+] {username} logged in from {clients[conn]}")
             del login_state[conn]  # no longer needed
         else:
-            conn.sendall(b"Invalid login. Try again.\nUsername: ")
+            conn.sendall(b"Invalid login. Try again.\n")
             login_state[conn] = {"stage": "username"}  # restart
 
 
