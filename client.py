@@ -23,7 +23,7 @@ def prestart():
     if choice == '1':
         start_client(host="127.0.0.1", port=42000)
     elif choice == '2':
-        print("Enter pinggy link in this format: 'tcp://bcbxs-92-210-207-199.a.free.pinggy.link:34165'")
+        print("Enter pinggy link: ")
         link = input("Enter link: ")
         try:
             if link.startswith("tcp://"):
@@ -32,7 +32,7 @@ def prestart():
             port = int(port)
             start_client(host, port)
         except:
-            print("Invalid Link!")
+            print("Invalid Link! Enter in this format: 'tcp://bcbxs-92-210-207-199.a.free.pinggy.link:34165'")
             prestart()    
     else:
         print("Error! Invalid choice!")
