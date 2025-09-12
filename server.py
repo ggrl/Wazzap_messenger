@@ -56,6 +56,22 @@ def login(conn):
             conn.sendall(b"Invalid login. Try again.\nUsername: ")
             login_state[conn] = {"stage": "username"}  # restart
 
+
+def handle_command(conn, command):
+    username = usernames.get(conn, "Unknown")
+    if command == "/quit":
+        conn.sendall(b"Goodbye!\n")
+        close_connection(conn)
+    elif command == "/help":
+        conn.sendall(b"Available commands: /help, /users, /quit\n")
+    elif command == "/users":
+        all_users = list(usernames.values())
+        conn.sendall(f"Users currently logged in:\n".encode())
+        for user in all_users:
+            conn.sendall(f"{user}\n".encode())
+    else:
+        conn.sendall(f"Unknown command: {command}\n".encode())
+
 def read(conn):
     try:
         data = conn.recv(1024)
@@ -65,9 +81,13 @@ def read(conn):
 
     if data:
         username = usernames.get(conn, "Unknown")
-        msg = f"[{username}] {data.decode().strip()}"
-        print(msg)
-        broadcast(msg.encode(), conn)
+        msg_text = data.decode().strip()
+        if msg_text.startswith("/"):
+            handle_command(conn, msg_text)
+        else:
+            msg = f"[{username}] {data.decode().strip()}"
+            print(msg)
+            broadcast(msg.encode(), conn)
     else:
         close_connection(conn)
 
