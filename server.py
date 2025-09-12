@@ -6,8 +6,7 @@ sel = selectors.DefaultSelector()
 clients = {}
 usernames = {}
 login_state = {}
-buffers = {}   # per-connection buffers for partial data
-
+buffers = {} 
 
 USER_DB = {
     "maryam": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
