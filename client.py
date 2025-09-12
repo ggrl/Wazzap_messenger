@@ -18,6 +18,27 @@ def receive_messages(sock):
             break
     sock.close()
 
+def prestart():
+    print("How do you want to connect? Choose '1' for local or '2' for remote.")
+    choice = input("Enter (1/2): ")
+    if choice == '1':
+        start_client(host="127.0.0.1", port=42000)
+    elif choice == '2':
+        print("Enter pinggy link in this format: 'tcp://bcbxs-92-210-207-199.a.free.pinggy.link:34165'")
+        link = input("Enter link: ")
+        try:
+            if link.startswith("tcp:"):
+                link = link.replace('tcp://', '')
+            host, port = link.split(':')
+            port = int(port)
+            start_client(host, port)
+        except:
+            print("Invalid Link!")
+            prestart()    
+    else:
+        print("Error! Inavlid choice!")
+        prestart()
+
 def start_client(host, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
@@ -48,4 +69,4 @@ def start_client(host, port):
         sock.close()
 
 
-start_client(host="127.0.0.1", port=42000)
+prestart()
