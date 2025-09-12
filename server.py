@@ -8,9 +8,9 @@ login_state = {}
 
 
 USER_DB = {
-    "maryam": "password123",
-    "gregor": "password123",
-    "mahmoud": "password123",
+    "maryam": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "gregor": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "mahmoud": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
 }
 
 def accept(sock):

@@ -1,6 +1,7 @@
 import socket
 import threading
 import getpass
+import hashlib
 
 def receive_messages(sock):
     """Continuously receive messages from the server."""
@@ -29,8 +30,11 @@ def start_client(host, port):
     try:
         username = input("Enter username: ")
         sock.sendall((username + "\n").encode())
-        password = password = getpass.getpass("Enter password: ")
-        sock.sendall((password + "\n").encode())
+        password  = getpass.getpass("Enter password: ")
+        encoded_pw = password.encode()
+        hashed_pw = hashlib.sha256(encoded_pw)
+        pw_hash = hashed_pw.hexdigest()
+        sock.sendall((pw_hash + "\n").encode())
 
         
         while True:
@@ -44,4 +48,4 @@ def start_client(host, port):
         sock.close()
 
 
-start_client(host="bcbxs-92-210-207-199.a.free.pinggy.link", port=34165)
+start_client(host="127.0.0.1", port=42000)
