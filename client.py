@@ -2,19 +2,21 @@ import socket
 import threading
 
 def receive_messages(sock):
+    """Continuously receive messages from the server."""
     while True:
         try:
             data = sock.recv(1024)
             if not data:
                 print("[-] Disconnected from server")
                 break
-            print(data.decode())
+            text = data.decode()
+            print(text, end="")  # print without extra newline
         except Exception as e:
             print(f"[!] Error receiving: {e}")
             break
     sock.close()
 
-def start_client(host="127.0.0.1", port=42000):
+def start_client(host, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     print(f"[*] Connected to chat server {host}:{port}")
@@ -22,10 +24,16 @@ def start_client(host="127.0.0.1", port=42000):
     
     threading.Thread(target=receive_messages, args=(sock,), daemon=True).start()
 
-    # Main loop: read user input and send to server
+    
     try:
+        username = input("Enter username: ")
+        sock.sendall((username + "\n").encode())
+        password = input("Enter password: ")
+        sock.sendall((password + "\n").encode())
+
+        
         while True:
-            msg = input(r"[You] ")
+            msg = input()
             if msg.lower() in ("quit", "exit"):
                 break
             sock.sendall(msg.encode())
@@ -35,4 +43,4 @@ def start_client(host="127.0.0.1", port=42000):
         sock.close()
 
 
-start_client()
+start_client("127.0.0.1", 42000)

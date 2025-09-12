@@ -2,36 +2,100 @@ import socket
 import selectors
 
 sel = selectors.DefaultSelector()
-clients = {}  # Keep track of active connections
+clients = {}        
+usernames = {}      
+login_state = {}    
+
+
+USER_DB = {
+    "maryam": "password123",
+    "gregor": "password123",
+    "mahmoud": "password123",
+}
 
 def accept(sock):
     conn, addr = sock.accept()
     print(f"[+] Accepted connection from {addr}")
     conn.setblocking(False)
     clients[conn] = addr
-    sel.register(conn, selectors.EVENT_READ, read)
+    login_state[conn] = {"stage": "username"}  
+    sel.register(conn, selectors.EVENT_READ, login)
+    conn.sendall(b"Welcome! Please log in.\nUsername: ")
+
+def login(conn):
+    """Handle login before joining chat."""
+    try:
+        data = conn.recv(1024).decode().strip()
+    except ConnectionResetError:
+        close_connection(conn)
+        return
+
+    if not data:
+        close_connection(conn)
+        return
+
+    state = login_state.get(conn, {})
+
+    if state.get("stage") == "username":
+        state["username_candidate"] = data
+        state["stage"] = "password"
+        login_state[conn] = state
+        conn.sendall(b"Password: ")
+
+    elif state.get("stage") == "password":
+        username = state.get("username_candidate")
+        password = data
+        if username in USER_DB and USER_DB[username] == password:
+            usernames[conn] = username
+            sel.modify(conn, selectors.EVENT_READ, read)  
+            conn.sendall(f"Login successful! Welcome, {username}.\n".encode())
+            broadcast(f"*** {username} has joined the chat ***".encode(), conn)
+            print(f"[+] {username} logged in from {clients[conn]}")
+            del login_state[conn]  # no longer needed
+        else:
+            conn.sendall(b"Invalid login. Try again.\nUsername: ")
+            login_state[conn] = {"stage": "username"}  # restart
 
 def read(conn):
-    data = conn.recv(1024)
+    try:
+        data = conn.recv(1024)
+    except ConnectionResetError:
+        close_connection(conn)
+        return
+
     if data:
-        msg = f"[{clients[conn][0]}:{clients[conn][1]}] {data.decode().strip()}"
+        username = usernames.get(conn, "Unknown")
+        msg = f"[{username}] {data.decode().strip()}"
         print(msg)
         broadcast(msg.encode(), conn)
     else:
-        print(f"[-] Closing connection {clients[conn]}")
-        sel.unregister(conn)
-        conn.close()
-        del clients[conn]
+        close_connection(conn)
 
 def broadcast(message, sender=None):
-    for conn in clients:
-        if conn != sender:  # Don’t echo back to sender
+    for conn in list(usernames.keys()):
+        #if conn != sender:
             try:
-                conn.sendall(message)
+                conn.sendall(message + b"\n")
             except Exception as e:
-                print(f"[!] Error sending to {clients[conn]}: {e}")
+                print(f"[!] Error sending to {clients.get(conn)}: {e}")
+                close_connection(conn)
 
-def start_server(host="127.0.0.1", port=42000):
+def close_connection(conn):
+    addr = clients.get(conn)
+    username = usernames.pop(conn, None)
+    login_state.pop(conn, None)
+    if username:
+        broadcast(f"*** {username} has left the chat ***".encode(), conn)
+    if conn in clients:
+        del clients[conn]
+    try:
+        sel.unregister(conn)
+    except Exception:
+        pass
+    conn.close()
+    print(f"[-] Connection closed {addr} ({username})")
+
+def start_server(host="127.0.0.1", port=5000):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((host, port))
     server.listen()
@@ -46,4 +110,4 @@ def start_server(host="127.0.0.1", port=42000):
             callback(key.fileobj)
 
 
-start_server()
+start_server("127.0.0.1", 42000)
