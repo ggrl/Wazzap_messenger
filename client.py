@@ -1,5 +1,6 @@
 import socket
 import threading
+import getpass
 
 def receive_messages(sock):
     """Continuously receive messages from the server."""
@@ -28,7 +29,7 @@ def start_client(host, port):
     try:
         username = input("Enter username: ")
         sock.sendall((username + "\n").encode())
-        password = input("Enter password: ")
+        password = password = getpass.getpass("Enter password: ")
         sock.sendall((password + "\n").encode())
 
         

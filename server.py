@@ -73,7 +73,7 @@ def read(conn):
 
 def broadcast(message, sender=None):
     for conn in list(usernames.keys()):
-        #if conn != sender:
+        if conn != sender:
             try:
                 conn.sendall(message + b"\n")
             except Exception as e:
