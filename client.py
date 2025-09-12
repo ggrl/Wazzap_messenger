@@ -44,4 +44,4 @@ def start_client(host, port):
         sock.close()
 
 
-start_client("127.0.0.1", 42000)
+start_client(host="bcbxs-92-210-207-199.a.free.pinggy.link", port=34165)
