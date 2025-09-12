@@ -4,7 +4,6 @@ import getpass
 import hashlib
 
 def receive_messages(sock):
-    """Continuously receive messages from the server."""
     while True:
         try:
             data = sock.recv(1024)
@@ -27,7 +26,7 @@ def prestart():
         print("Enter pinggy link in this format: 'tcp://bcbxs-92-210-207-199.a.free.pinggy.link:34165'")
         link = input("Enter link: ")
         try:
-            if link.startswith("tcp:"):
+            if link.startswith("tcp://"):
                 link = link.replace('tcp://', '')
             host, port = link.split(':')
             port = int(port)
