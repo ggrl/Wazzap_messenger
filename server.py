@@ -67,7 +67,7 @@ def login(conn):
             print(f"[+] {username} logged in from {clients[conn]}")
             del login_state[conn]
         else:
-            conn.sendall(b"Invalid login. Try again.\n")
+            conn.sendall(b"Username and password does not match.\n")
             login_state[conn] = {"stage": "username"}
 
 

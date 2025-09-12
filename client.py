@@ -62,7 +62,7 @@ def start_client(host, port):
             if "successful" in response.lower():
                 break  
             else:
-                print("[!] Login failed, try again...\n")
+                print("[!] Login failed, try again...")
         threading.Thread(target=receive_messages, args=(sock,), daemon=True).start()
         while True:
             msg = input()
