@@ -8,12 +8,15 @@ usernames = {}
 login_state = {}
 buffers = {} 
 
-USER_DB = {
-    "maryam": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
-    "gregor": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
-    "mahmoud": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
-}
+USER_DB = {}
 
+def fill_DB():
+    USER_DB.clear()
+    with open('users.dat', 'r') as f:
+        for line in f:
+            key, value = line.split(':')
+            value = value.strip()
+            USER_DB[key] = value
 
 def recv_line(conn): #Full line reading
     try:
@@ -129,6 +132,7 @@ def close_connection(conn):
 
 
 def start_server(host="127.0.0.1", port=5000):
+    fill_DB()
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((host, port))
     server.listen()
