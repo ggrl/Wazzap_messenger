@@ -73,7 +73,7 @@ def start_client(host, port):
         try:
             sock.sendall(("/quit\n").encode())
         except:
-        pass
+            pass
         
     finally:
         sock.close()
