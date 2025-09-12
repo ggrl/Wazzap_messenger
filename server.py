@@ -1,5 +1,6 @@
 import socket
 import selectors
+from datetime import datetime 
 
 sel = selectors.DefaultSelector()
 clients = {}
@@ -97,7 +98,7 @@ def read(conn):
     if data.startswith("/"):
         handle_command(conn, data)
     else:
-        msg = f"[{username}] {data}"
+        msg = f"[{datetime.now().strftime("%H:%M:%S")}][{username}] {data}"
         print(msg)
         broadcast(msg.encode(), conn)
 
