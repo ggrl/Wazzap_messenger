@@ -36,7 +36,7 @@ def prestart():
             print("Invalid Link!")
             prestart()    
     else:
-        print("Error! Inavlid choice!")
+        print("Error! Invalid choice!")
         prestart()
 
 def start_client(host, port):
@@ -50,7 +50,7 @@ def start_client(host, port):
             username = input("Enter username: ")
             sock.sendall((username + "\n").encode())
             prompt = sock.recv(1024).decode()
-            print(prompt, end="")
+            #print(prompt, end="")
 
             password  = getpass.getpass("Enter password: ")
             encoded_pw = password.encode()

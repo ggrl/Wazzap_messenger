@@ -54,7 +54,7 @@ def login(conn):
         state["username_candidate"] = data
         state["stage"] = "password"
         login_state[conn] = state
-        conn.sendall(b"Password: ")
+        conn.sendall(b"[*]")
 
     elif state.get("stage") == "password":
         username = state.get("username_candidate")
