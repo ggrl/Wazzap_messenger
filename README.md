@@ -43,11 +43,12 @@ Everything you write in the terminal will be broadcastet to every client connect
 
 Available commands:
 
+```
 - /help               -- Displays all commands
 - /users              -- Lists currently connected users
 - /pm <user> <text>   -- Sends a private message to the user
 - /quit               -- Disconnects from the server
-
+```
 
 ### created by:
 
