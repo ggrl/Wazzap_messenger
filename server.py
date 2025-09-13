@@ -5,6 +5,7 @@ from datetime import datetime
 sel = selectors.DefaultSelector()
 clients = {}
 usernames = {}
+user_conns = {}
 login_state = {}
 buffers = {} 
 
@@ -66,6 +67,7 @@ def login(conn):
 
         if username in USER_DB and USER_DB[username] == pw_hash:
             usernames[conn] = username
+            user_conns[username] = conn
             sel.modify(conn, selectors.EVENT_READ, read)  # switch to chat
             conn.sendall(f"Login successful! Welcome, {username}.\n".encode())
             broadcast(f"*** {username} has joined the chat ***".encode(), conn)
@@ -73,6 +75,7 @@ def login(conn):
             del login_state[conn]
         elif username not in USER_DB:
             usernames[conn] = username
+            user_conns[username] = conn
             with open('users.dat', "a") as f:
                         f.write(f"{username}:{pw_hash}\n")
             fill_DB()
@@ -92,12 +95,26 @@ def handle_command(conn, command):
         conn.sendall(b"Goodbye!\n")
         close_connection(conn)
     elif command == "/help":
-        conn.sendall(b"Available commands: /help, /users, /quit\n")
+        conn.sendall(b"Available commands: /help, /users --list users, /pm <name> <text> --private message, /quit --exit program\n")
     elif command == "/users":
         all_users = list(usernames.values())
         conn.sendall(f"Users currently logged in:\n".encode())
         for user in all_users:
             conn.sendall(f"{user}\n".encode())
+    elif command.startswith("/pm "):
+        try:
+            pm = command.split(" ")
+            if pm[1] in user_conns:
+                conn_pm = user_conns.get(pm[1])
+                pm_content = pm[2:]
+                pm_content_str = " ".join(pm_content)
+                pm_content_str_tag = f"[{datetime.now().strftime("%H:%M:%S")}][{username}][PM] {pm_content_str}\n"
+                conn_pm.sendall(pm_content_str_tag.encode())
+            else:
+                conn.sendall(f"No user named {pm[1]}.\n".encode())
+        except:
+          conn.sendall(f"Unknown command: {command}\n".encode())         
+    
     else:
         conn.sendall(f"Unknown command: {command}\n".encode())
 
