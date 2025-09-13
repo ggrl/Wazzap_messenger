@@ -12,7 +12,7 @@ Run the client and choose 1, if asked if you want to connect locally or remotely
 
 You can run as many clients as you want.
 
-## Setup - local
+## Setup - remote
 
 To use the chat remotely, run the server from the folder, where the 'server.py' and 'users.dat' are located. (e.g. 'python3 server.py')
 
