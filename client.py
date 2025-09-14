@@ -42,6 +42,7 @@ def start_client(host, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     print(f"[*] Connected to chat server {host}:{port}")
+    print("[*] Enter a new username & password to create a account or type in your credentials, if you already have one.")
  
     try:
         while True: 
